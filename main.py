@@ -32,7 +32,7 @@ print(test)
 #Am Ende haben wir dann die passende Spalte
 # Least Square ist dabei die Methode der kleinsten Quadrate
 
-TrainValue = "y1"
+TrainValue = "y4"
 LeastSquareLow = 999
 
 for column in ideal.columns:
@@ -52,5 +52,17 @@ for column in ideal.columns:
 
 print("TrainValue", TrainValue, "IdealPassend", idealFunction)
 
-#Codeschnipsel least Square scheint zu stimmen
 
+#Codeschnipsel least Square scheint zu stimmen
+#Aber ich bekomme keinen Plot...
+
+
+training.plot(y='y4')
+ideal.plot(y='y33')
+plt.show()
+
+#Warum auch immer geht es jetzt...
+#Plots sollten gut passen
+#Test für y2 noch nicht erfolgreich. Liefert x als Ergebnis
+#y3 = y2 könnte passen
+#y4 = y33 passt.
