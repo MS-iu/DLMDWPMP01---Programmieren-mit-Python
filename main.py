@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlalchemy as db
 import matplotlib.pyplot as plt
+from matplotlib import style
 import numpy as np
 import os
 import math
@@ -17,7 +18,9 @@ print ("Verwendeter Laufwerkspfad:", pfad)
 
 #Einlesen der Dateien
 ideal = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/ideal.csv")
+ideal.set_index('x',inplace=True)
 training = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/train.csv")
+training.set_index('x',inplace=True)
 test = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/test.csv")
 
 print(ideal)
@@ -32,7 +35,7 @@ print(test)
 #Am Ende haben wir dann die passende Spalte
 # Least Square ist dabei die Methode der kleinsten Quadrate
 
-TrainValue = "y4"
+TrainValue = "y2"
 LeastSquareLow = 999
 
 for column in ideal.columns:
@@ -56,13 +59,78 @@ print("TrainValue", TrainValue, "IdealPassend", idealFunction)
 #Codeschnipsel least Square scheint zu stimmen
 #Aber ich bekomme keinen Plot...
 
-
-training.plot(y='y4')
-ideal.plot(y='y33')
-plt.show()
+#style.use('ggplot')
+#plt.grid(True, color="k")
+#training.plot(y='y2', title='Train',)
+#ideal.plot(y='y11', title='Ideal')
+#plt.show()
 
 #Warum auch immer geht es jetzt...
 #Plots sollten gut passen
 #Test für y2 noch nicht erfolgreich. Liefert x als Ergebnis
 #y3 = y2 könnte passen
 #y4 = y33 passt.
+#y1=y36
+
+#y2 passend zu y11. x muss sowohl in ideal als auch im train Datensatz als index ausgenommen werden.
+#Ausnahme von nur ideal führt zu Fehlermeldung
+#plot sieht passend aus
+
+style.use('ggplot')
+
+#1
+fig, axs = plt.subplots(2)
+fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+training.plot(y='y1',color = 'blue',ax=axs[0])
+ideal.plot(y='y36',color = 'blue',ax=axs[1])
+axs[0].set_title('Training', font='11')
+axs[1].set_title('Ideal', font='11')
+
+for ax in axs.flat:
+    ax.set(xlabel='', ylabel='')
+    ax.label_outer()
+
+plt.show()
+
+#2
+fig, axs = plt.subplots(2)
+fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+training.plot(y='y2',color = 'orange', ax=axs[0])
+ideal.plot(y='y11',color = 'orange', ax=axs[1])
+axs[0].set_title('Training', font='11')
+axs[1].set_title('Ideal', font='11')
+
+for ax in axs.flat:
+    ax.set(xlabel='', ylabel='')
+    ax.label_outer()
+
+plt.show()
+
+#3
+fig, axs = plt.subplots(2)
+fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+training.plot(y='y3',color = 'green', ax=axs[0])
+ideal.plot(y='y2',color = 'green', ax=axs[1])
+axs[0].set_title('Training', font='11')
+axs[1].set_title('Ideal', font='11')
+
+for ax in axs.flat:
+    ax.set(xlabel='', ylabel='')
+    ax.label_outer()
+
+plt.show()
+
+#4
+fig, axs = plt.subplots(2)
+fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+training.plot(y='y4',color = 'red', ax=axs[0])
+ideal.plot(y='y33',color = 'red', ax=axs[1])
+axs[0].set_title('Training', font='11')
+axs[1].set_title('Ideal', font='11')
+
+for ax in axs.flat:
+    ax.set(xlabel='', ylabel='')
+    ax.label_outer()
+
+plt.show()
+
