@@ -3,6 +3,8 @@ import sqlalchemy as db
 import matplotlib.pyplot as plt
 from matplotlib import style
 import os
+import math
+
 
 #Erster Test
 print('Diese Lösung wurde mit folgenden Versionen erstellt:')
@@ -20,6 +22,7 @@ ideal.set_index('x', inplace=True)
 training = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/train.csv")
 training.set_index('x', inplace=True)
 test = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/test.csv")
+test.sort_values(["x"], inplace= True)
 
 print(ideal)
 print(training)
@@ -104,78 +107,66 @@ class LeastSquare(Vererbung):
 #Ausnahme von nur ideal führt zu Fehlermeldung
 #plot sieht passend aus
 
+def plot():
+
+    style.use('ggplot')
 
 
-style.use('ggplot')
+    #1
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+    training.plot(y='y1',color = 'blue',ax=axs[0])
+    ideal.plot(y='y36',color = 'blue',ax=axs[1])
+    axs[0].set_title('Training')
+    axs[1].set_title('Ideal')
 
+    for ax in axs.flat:
+        ax.set(xlabel='', ylabel='')
+        ax.label_outer()
 
-#1
-fig, axs = plt.subplots(2)
-fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
-training.plot(y='y1',color = 'blue',ax=axs[0])
-ideal.plot(y='y36',color = 'blue',ax=axs[1])
-axs[0].set_title('Training')
-axs[1].set_title('Ideal')
+    #plt.show()
 
-for ax in axs.flat:
-    ax.set(xlabel='', ylabel='')
-    ax.label_outer()
+    #2
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+    training.plot(y='y2',color = 'orange', ax=axs[0])
+    ideal.plot(y='y11',color = 'orange', ax=axs[1])
+    axs[0].set_title('Training')
+    axs[1].set_title('Ideal')
 
-#plt.show()
+    for ax in axs.flat:
+        ax.set(xlabel='', ylabel='')
+        ax.label_outer()
 
-#2
-fig, axs = plt.subplots(2)
-fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
-training.plot(y='y2',color = 'orange', ax=axs[0])
-ideal.plot(y='y11',color = 'orange', ax=axs[1])
-axs[0].set_title('Training')
-axs[1].set_title('Ideal')
+    #plt.show()
 
-for ax in axs.flat:
-    ax.set(xlabel='', ylabel='')
-    ax.label_outer()
+    #3
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+    training.plot(y='y3',color = 'green', ax=axs[0])
+    ideal.plot(y='y2',color = 'green', ax=axs[1])
+    axs[0].set_title('Training')
+    axs[1].set_title('Ideal')
 
-#plt.show()
+    for ax in axs.flat:
+        ax.set(xlabel='', ylabel='')
+        ax.label_outer()
 
-#3
-fig, axs = plt.subplots(2)
-fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
-training.plot(y='y3',color = 'green', ax=axs[0])
-ideal.plot(y='y2',color = 'green', ax=axs[1])
-axs[0].set_title('Training')
-axs[1].set_title('Ideal')
+    #plt.show()
 
-for ax in axs.flat:
-    ax.set(xlabel='', ylabel='')
-    ax.label_outer()
+    #4
+    fig, axs = plt.subplots(2)
+    fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
+    training.plot(y='y4',color = 'red', ax=axs[0])
+    ideal.plot(y='y33',color = 'red', ax=axs[1])
+    axs[0].set_title('Training')
+    axs[1].set_title('Ideal')
 
-#plt.show()
+    for ax in axs.flat:
+        ax.set(xlabel='', ylabel='')
+        ax.label_outer()
 
-#4
-fig, axs = plt.subplots(2)
-fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
-training.plot(y='y4',color = 'red', ax=axs[0])
-ideal.plot(y='y33',color = 'red', ax=axs[1])
-axs[0].set_title('Training')
-axs[1].set_title('Ideal')
-
-for ax in axs.flat:
-    ax.set(xlabel='', ylabel='')
-    ax.label_outer()
-
-#plt.show()
-
-
-#Teil 2 Funktionstest:
-#Welche der 4 idealen Funktionen passt an besten zu den Test Punkten
-#Aber am Ende kleiner sqrt 2
-
-#Ersetze Training durch Ideal
-
-#Bestimme für jede Spalte den nächsten Fit solange kleiner als sqrt2
-
-#Schreibe Lösung in Tabelle
-
+    #plt.show()
 
 #Daten in SQL Datenbank legen
 connection = db.create_engine("sqlite:///database.sqlite")
@@ -187,15 +178,40 @@ ideal.to_sql('ideal',connection, if_exists='replace', index=True)
 
 #index True anstelle von 'x'
 
-
 #Speichern der Werte funktioniert nicht....
 #Warum weiß ich noch nicht
-#Funktioniert mit der Hauptfunktion
-#Ausgabe der Tabelle mit den idealen Funktionen läuft jetzt scheinbar auch
+#Funktioniert mit der Main Funktion
+#Ausgabe der Tabelle mit den idealen Funktionen läuft jetzt auch
+
+#Teil 2 Funktionstest:
+#Welche der 4 idealen Funktionen passt an besten zu den Test Punkten
+#Aber am Ende kleiner sqrt 2
+
+def test_best_fit():
+    test_neu = test.join(Alle_Ideal, on='x')
+
+    for column in test_neu.columns[2:6]:
+        for row in test_neu.index:
+            cal = abs(test_neu['y'][row] - test_neu[column][row])
+
+
+            if 0 < cal <= math.sqrt(2):
+                test_neu.loc[row, 'Id Fkt.'] = column
+                test_neu.loc[row, 'Delta Y'] = cal
+
+    test_neu.to_sql('test', connection, if_exists='replace', index=True)
+
+    return test_neu
+
+#Bestimme für jede Spalte den nächsten Fit solange kleiner als sqrt2
+
+#Schreibe Lösung in Tabelle
+
 
 def main():
 #Erzeugen der globalen Variable für den DataFrame
     global Alle_Ideal
+
 
     Y1 = LeastSquare('y1')
     Y2 = LeastSquare('y2')
@@ -204,18 +220,19 @@ def main():
 
     try:
         data_list = {Y1.least_square(Y1.TrainValue): ideal[Y1.least_square(Y1.TrainValue)],
-                Y2.least_square(Y2.TrainValue): ideal[Y2.least_square(Y2.TrainValue)],
-                Y3.least_square(Y3.TrainValue): ideal[Y3.least_square(Y3.TrainValue)],
-                Y4.least_square(Y4.TrainValue): ideal[Y4.least_square(Y4.TrainValue)]}
+                    Y2.least_square(Y2.TrainValue): ideal[Y2.least_square(Y2.TrainValue)],
+                    Y3.least_square(Y3.TrainValue): ideal[Y3.least_square(Y3.TrainValue)],
+                    Y4.least_square(Y4.TrainValue): ideal[Y4.least_square(Y4.TrainValue)]}
 
     except SyntaxError:
         print("FehlerSyntax")
 
     else:
         Alle_Ideal = pd.DataFrame(data_list)
+        print(Alle_Ideal)
+        print(test_best_fit())
 
     finally:
-        print(Alle_Ideal)
         print("end")
 
 """ This part of the script will only by executed
