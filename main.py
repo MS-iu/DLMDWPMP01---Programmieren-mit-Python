@@ -16,9 +16,9 @@ print ("Verwendeter Laufwerkspfad:", pfad)
 
 #Einlesen der Dateien
 ideal = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/ideal.csv")
-ideal.set_index('x',inplace=True)
+ideal.set_index('x', inplace=True)
 training = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/train.csv")
-training.set_index('x',inplace=True)
+training.set_index('x', inplace=True)
 test = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/test.csv")
 
 print(ideal)
@@ -26,46 +26,62 @@ print(training)
 print(test)
 
 #Einfügen der Klassenlogik
+#Einfügen von Exceptions
+
+class AnzahlFehler(Exception):
+    def __init__(self):
+        my_message = 'Fehler'
+        self.my_message = my_message
 
 class Vererbung():
 #Vererbungshierarchie einführen und ausführen
     def __init__(self, TrainValue):
         self.TrainValue = TrainValue
-
+    def calculate_least_square(self):
         pass
-
 
 
 class LeastSquare(Vererbung):
     def least_square(self, TrainValue):
         self.TrainValue = TrainValue
 
-            # Berechnung zum finden der vier idealen Funktionen
-            # Erster Versuch für y1
-            # Wir berechnen für jede Spalte der idealen Funktionen den Least Square Wert und vergleichen ob er niedriger als der vorherige ist.
-            # Falls ja merken wir uns die Spalte.
-            # Am Ende haben wir dann die passende Spalte
-            # Least Square ist dabei die Methode der kleinsten Quadrate
+        # Berechnung zum finden der vier idealen Funktionen
+        # Erster Versuch für y1
+        # Wir berechnen für jede Spalte der idealen Funktionen den Least Square Wert und vergleichen ob er niedriger als der vorherige ist.
+        # Falls ja merken wir uns die Spalte.
+        # Am Ende haben wir dann die passende Spalte
+        # Least Square ist dabei die Methode der kleinsten Quadrate
+        # Versuch mit AlleIdeal die vier Spalten der Idealen Funktionen zu speichern.
+        # Zusätzliche Funktion Haupt angelegt
 
-        LeastSquareLow = 999
-
-        for column in ideal.columns:
-            sumSquared = []
-
-            for row in training.index:
-
-                diff = (training[TrainValue][row] - ideal[column][row]) ** 2
-                sumSquared.append(diff)
-
-            LeastSquareNew = sum(sumSquared)
-
-            if LeastSquareNew < LeastSquareLow:  # check if a value of ideal
-                    # is lower than the actual value
-                LeastSquareLow = LeastSquareNew
-                idealFunction = column
+        if TrainValue not in ['y1', 'y2', 'y3', 'y4']:
+            raise AnzahlFehler
+            print("Fehler in der Anzahl der Prüfungen")
 
 
-        return idealFunction
+        else:
+            LeastSquareLow = 999
+            for column in ideal.columns:
+                sumSquared = []
+
+                for row in training.index:
+
+                    diff = (training[TrainValue][row] - ideal[column][row]) ** 2
+                    sumSquared.append(diff)
+
+                LeastSquareNew = sum(sumSquared)
+
+                if LeastSquareNew < LeastSquareLow:
+
+                    LeastSquareLow = LeastSquareNew
+                    idealFunction = column
+
+            #print("Train", TrainValue, "=Ideal", idealFunction)
+            return idealFunction
+
+
+
+
 
 
 #Codeschnipsel least Square scheint zu stimmen
@@ -87,6 +103,8 @@ class LeastSquare(Vererbung):
 #y2 passend zu y11. x muss sowohl in ideal als auch im train Datensatz als index ausgenommen werden.
 #Ausnahme von nur ideal führt zu Fehlermeldung
 #plot sieht passend aus
+
+
 
 style.use('ggplot')
 
@@ -165,4 +183,43 @@ training.to_sql('training',connection, if_exists='replace', index=True)
 test.to_sql('test',connection, if_exists='replace', index=True)
 ideal.to_sql('ideal',connection, if_exists='replace', index=True)
 
+
+
 #index True anstelle von 'x'
+
+
+#Speichern der Werte funktioniert nicht....
+#Warum weiß ich noch nicht
+#Funktioniert mit der Hauptfunktion
+#Ausgabe der Tabelle mit den idealen Funktionen läuft jetzt scheinbar auch
+
+def main():
+#Erzeugen der globalen Variable für den DataFrame
+    global Alle_Ideal
+
+    Y1 = LeastSquare('y1')
+    Y2 = LeastSquare('y2')
+    Y3 = LeastSquare('y3')
+    Y4 = LeastSquare('y4')
+
+    try:
+        data_list = {Y1.least_square(Y1.TrainValue): ideal[Y1.least_square(Y1.TrainValue)],
+                Y2.least_square(Y2.TrainValue): ideal[Y2.least_square(Y2.TrainValue)],
+                Y3.least_square(Y3.TrainValue): ideal[Y3.least_square(Y3.TrainValue)],
+                Y4.least_square(Y4.TrainValue): ideal[Y4.least_square(Y4.TrainValue)]}
+
+    except SyntaxError:
+        print("FehlerSyntax")
+
+    else:
+        Alle_Ideal = pd.DataFrame(data_list)
+
+    finally:
+        print(Alle_Ideal)
+        print("end")
+
+""" This part of the script will only by executed
+ if the script is called directly
+ """
+if __name__ == '__main__':
+    main()
