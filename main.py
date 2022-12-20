@@ -2,9 +2,7 @@ import pandas as pd
 import sqlalchemy as db
 import matplotlib.pyplot as plt
 from matplotlib import style
-import numpy as np
 import os
-import math
 
 #Erster Test
 print('Diese Lösung wurde mit folgenden Versionen erstellt:')
@@ -27,33 +25,47 @@ print(ideal)
 print(training)
 print(test)
 
+#Einfügen der Klassenlogik
 
-#Berechnung zum finden der vier idealen Funktionen
-#Erster Versuch für y1
-#Wir berechnen für jede Spalte der idealen Funktionen den Least Square Wert und vergleichen ob er niedriger als der vorherige ist.
-#Falls ja merken wir uns die Spalte.
-#Am Ende haben wir dann die passende Spalte
-# Least Square ist dabei die Methode der kleinsten Quadrate
+class Vererbung():
+#Vererbungshierarchie einführen und ausführen
+    def __init__(self, TrainValue):
+        self.TrainValue = TrainValue
 
-TrainValue = "y2"
-LeastSquareLow = 999
+        pass
 
-for column in ideal.columns:
-    sumSquared = []
 
-    for row in training.index:
 
-        diff = (training[TrainValue][row] - ideal[column][row]) ** 2
-        sumSquared.append(diff)
+class LeastSquare(Vererbung):
+    def least_square(self, TrainValue):
+        self.TrainValue = TrainValue
 
-    LeastSquareNew = sum(sumSquared)
+            # Berechnung zum finden der vier idealen Funktionen
+            # Erster Versuch für y1
+            # Wir berechnen für jede Spalte der idealen Funktionen den Least Square Wert und vergleichen ob er niedriger als der vorherige ist.
+            # Falls ja merken wir uns die Spalte.
+            # Am Ende haben wir dann die passende Spalte
+            # Least Square ist dabei die Methode der kleinsten Quadrate
 
-    if LeastSquareNew < LeastSquareLow:  # check if a value of ideal
-        # is lower than the actual value
-        LeastSquareLow = LeastSquareNew
-        idealFunction = column
+        LeastSquareLow = 999
 
-print("TrainValue", TrainValue, "IdealPassend", idealFunction)
+        for column in ideal.columns:
+            sumSquared = []
+
+            for row in training.index:
+
+                diff = (training[TrainValue][row] - ideal[column][row]) ** 2
+                sumSquared.append(diff)
+
+            LeastSquareNew = sum(sumSquared)
+
+            if LeastSquareNew < LeastSquareLow:  # check if a value of ideal
+                    # is lower than the actual value
+                LeastSquareLow = LeastSquareNew
+                idealFunction = column
+
+
+        return idealFunction
 
 
 #Codeschnipsel least Square scheint zu stimmen
@@ -78,59 +90,79 @@ print("TrainValue", TrainValue, "IdealPassend", idealFunction)
 
 style.use('ggplot')
 
+
 #1
 fig, axs = plt.subplots(2)
 fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
 training.plot(y='y1',color = 'blue',ax=axs[0])
 ideal.plot(y='y36',color = 'blue',ax=axs[1])
-axs[0].set_title('Training', font='11')
-axs[1].set_title('Ideal', font='11')
+axs[0].set_title('Training')
+axs[1].set_title('Ideal')
 
 for ax in axs.flat:
     ax.set(xlabel='', ylabel='')
     ax.label_outer()
 
-plt.show()
+#plt.show()
 
 #2
 fig, axs = plt.subplots(2)
 fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
 training.plot(y='y2',color = 'orange', ax=axs[0])
 ideal.plot(y='y11',color = 'orange', ax=axs[1])
-axs[0].set_title('Training', font='11')
-axs[1].set_title('Ideal', font='11')
+axs[0].set_title('Training')
+axs[1].set_title('Ideal')
 
 for ax in axs.flat:
     ax.set(xlabel='', ylabel='')
     ax.label_outer()
 
-plt.show()
+#plt.show()
 
 #3
 fig, axs = plt.subplots(2)
 fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
 training.plot(y='y3',color = 'green', ax=axs[0])
 ideal.plot(y='y2',color = 'green', ax=axs[1])
-axs[0].set_title('Training', font='11')
-axs[1].set_title('Ideal', font='11')
+axs[0].set_title('Training')
+axs[1].set_title('Ideal')
 
 for ax in axs.flat:
     ax.set(xlabel='', ylabel='')
     ax.label_outer()
 
-plt.show()
+#plt.show()
 
 #4
 fig, axs = plt.subplots(2)
 fig.suptitle('Selektion idealer Funktionen für den Training-Datensatz')
 training.plot(y='y4',color = 'red', ax=axs[0])
 ideal.plot(y='y33',color = 'red', ax=axs[1])
-axs[0].set_title('Training', font='11')
-axs[1].set_title('Ideal', font='11')
+axs[0].set_title('Training')
+axs[1].set_title('Ideal')
 
 for ax in axs.flat:
     ax.set(xlabel='', ylabel='')
     ax.label_outer()
 
-plt.show()
+#plt.show()
 
+
+#Teil 2 Funktionstest:
+#Welche der 4 idealen Funktionen passt an besten zu den Test Punkten
+#Aber am Ende kleiner sqrt 2
+
+#Ersetze Training durch Ideal
+
+#Bestimme für jede Spalte den nächsten Fit solange kleiner als sqrt2
+
+#Schreibe Lösung in Tabelle
+
+
+#Daten in SQL Datenbank legen
+connection = db.create_engine("sqlite:///database.sqlite")
+training.to_sql('training',connection, if_exists='replace', index=True)
+test.to_sql('test',connection, if_exists='replace', index=True)
+ideal.to_sql('ideal',connection, if_exists='replace', index=True)
+
+#index True anstelle von 'x'
