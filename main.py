@@ -107,6 +107,8 @@ class LeastSquare(Vererbung):
 #Ausnahme von nur ideal führt zu Fehlermeldung
 #plot sieht passend aus
 
+
+
 def plot():
 
     style.use('ggplot')
@@ -124,7 +126,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    #plt.show()
+    plt.show()
 
     #2
     fig, axs = plt.subplots(2)
@@ -138,7 +140,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    #plt.show()
+    plt.show()
 
     #3
     fig, axs = plt.subplots(2)
@@ -152,7 +154,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    #plt.show()
+    plt.show()
 
     #4
     fig, axs = plt.subplots(2)
@@ -166,7 +168,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    #plt.show()
+    plt.show()
 
 #Daten in SQL Datenbank legen
 connection = db.create_engine("sqlite:///database.sqlite")
@@ -201,6 +203,30 @@ def test_best_fit():
 
     test_neu.to_sql('test', connection, if_exists='replace', index=True)
 
+    NaN = {}
+    for row in test_neu.index:
+        if pd.isnull(test_neu['Id Fkt.'][row]):
+            NaN[test_neu['x'][row]] = [test_neu['y'][row]]
+
+    NaN_df = pd.DataFrame.from_dict(data=NaN, orient='index', columns=['y'])
+    NaN_df.reset_index(inplace=True)
+    print(NaN_df)
+
+    style.use('ggplot')
+    #test_neu.plot(x='x', y='y', kind='scatter', label='Testdatensatz', title= 'Visualisierung Test zu Ideal')
+    #test_neu.plot(x='x', y='y11', kind='line', label='y11', color='red', title= 'Visualisierung Test zu Ideal')
+
+    plt.scatter(test_neu['x'], test_neu['y36'], linewidth=0.1, color='blue', label='Ideal y36')
+    plt.scatter(test_neu['x'], test_neu['y11'], linewidth=0.1, color='orange', label='Ideal y11')
+    plt.scatter(test_neu['x'], test_neu['y2'], linewidth=0.1, color='green', label='Ideal y2')
+    plt.scatter(test_neu['x'], test_neu['y33'], linewidth=0.1, color='red', label='Ideal y33')
+    plt.scatter(test_neu['x'], test_neu['y'], label='Testdatensatz', color='grey')
+    plt.scatter(NaN_df['index'], NaN_df['y'] , label='NaN sqrt2', color='black')
+    plt.title('Vergleich Testdatensatz zu Idealdaten', fontsize=16)
+    plt.legend(fontsize=8, loc='upper center', facecolor='white')
+    plt.show()
+
+
     return test_neu
 
 #Bestimme für jede Spalte den nächsten Fit solange kleiner als sqrt2
@@ -208,9 +234,13 @@ def test_best_fit():
 #Schreibe Lösung in Tabelle
 
 
+
+
+
 def main():
 #Erzeugen der globalen Variable für den DataFrame
     global Alle_Ideal
+    global Tabelle3
 
 
     Y1 = LeastSquare('y1')
@@ -230,7 +260,12 @@ def main():
     else:
         Alle_Ideal = pd.DataFrame(data_list)
         print(Alle_Ideal)
-        print(test_best_fit())
+        Tabelle3 = pd.DataFrame(test_best_fit()).iloc[:,[0,1,7,6]]
+        Tabelle3.to_sql('test', connection, if_exists='replace', index=True)
+        print(Tabelle3)
+
+        #plot()
+
 
     finally:
         print("end")
