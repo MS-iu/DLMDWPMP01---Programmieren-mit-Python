@@ -17,11 +17,11 @@ pfad = os.path.dirname(__file__)
 print ("Verwendeter Laufwerkspfad:", pfad)
 
 #Einlesen der Dateien
-ideal = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/ideal.csv")
+ideal = pd.read_csv(os.path.join(pfad, "ideal.csv"))
 ideal.set_index('x', inplace=True)
-training = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/train.csv")
+training = pd.read_csv(os.path.join(pfad, "train.csv"))
 training.set_index('x', inplace=True)
-test = pd.read_csv("/Users/micha/Documents/GitHub/DLMDWPMP01---Programmieren-mit-Python/test.csv")
+test = pd.read_csv(os.path.join(pfad, "test.csv"))
 test.sort_values(["x"], inplace= True)
 
 print(ideal)
@@ -31,9 +31,9 @@ print(test)
 #Einfügen der Klassenlogik
 #Einfügen von Exceptions
 
-class AnzahlFehler(Exception):
+class MyException(Exception):
     def __init__(self):
-        my_message = 'Fehler'
+        my_message = 'Fehler. Der Wert befindet sich nicht in unseren Vorgaben.'
         self.my_message = my_message
 
 class Vererbung():
@@ -46,6 +46,7 @@ class Vererbung():
 
 class LeastSquare(Vererbung):
     def least_square(self, TrainValue):
+        global idealFunction
         self.TrainValue = TrainValue
 
         # Berechnung zum finden der vier idealen Funktionen
@@ -58,9 +59,7 @@ class LeastSquare(Vererbung):
         # Zusätzliche Funktion Haupt angelegt
 
         if TrainValue not in ['y1', 'y2', 'y3', 'y4']:
-            raise AnzahlFehler
-            print("Fehler in der Anzahl der Prüfungen")
-
+            raise MyException
 
         else:
             LeastSquareLow = 999
@@ -126,7 +125,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    plt.show()
+    #plt.show()
 
     #2
     fig, axs = plt.subplots(2)
@@ -140,7 +139,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    plt.show()
+    #plt.show()
 
     #3
     fig, axs = plt.subplots(2)
@@ -154,7 +153,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    plt.show()
+    #plt.show()
 
     #4
     fig, axs = plt.subplots(2)
@@ -168,7 +167,7 @@ def plot():
         ax.set(xlabel='', ylabel='')
         ax.label_outer()
 
-    plt.show()
+    #plt.show()
 
 #Daten in SQL Datenbank legen
 connection = db.create_engine("sqlite:///database.sqlite")
@@ -224,7 +223,7 @@ def test_best_fit():
     plt.scatter(NaN_df['index'], NaN_df['y'] , label='NaN sqrt2', color='black')
     plt.title('Vergleich Testdatensatz zu Idealdaten', fontsize=16)
     plt.legend(fontsize=8, loc='upper center', facecolor='white')
-    plt.show()
+    #plt.show()
 
 
     return test_neu
@@ -264,7 +263,7 @@ def main():
         Tabelle3.to_sql('test', connection, if_exists='replace', index=True)
         print(Tabelle3)
 
-        #plot()
+        plot()
 
 
     finally:
