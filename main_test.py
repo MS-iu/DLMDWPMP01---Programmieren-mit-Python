@@ -22,6 +22,8 @@ class MyTestCase(unittest.TestCase):
 
     def test_least_square_2(self):
 
+        #Prüfen auf falsche Eingabewerte
+
         with self.assertRaises(MyException):
             main.LeastSquare('y5').least_square(main.LeastSquare('y5').TrainValue)
 
